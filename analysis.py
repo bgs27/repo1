@@ -1,6 +1,4 @@
 import json
-from datetime import date
-import time
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,10 +15,15 @@ def read_data_from_json(file_name):
    return activities
 
 def correct_date_time(data):
-    data['start_date'] = pd.to_datetime(data['start_date'])
-    data['start_date'] = data['start_date'].dt.date
-    data['moving_time'] = pd.to_timedelta(data['moving_time'], unit='s')
-    return data
+   data['start_date'] = pd.to_datetime(data['start_date'])
+   data['start_time'] = data['start_date'].dt.time
+   data['date'] = data['start_date'].dt.date
+   data['month'] = data['start_date'].dt.month_name()
+   data['year'] = data['start_date'].dt.year
+   data['dayofyear'] = data['start_date'].dt.dayofyear
+   data['dayofyear'] = pd.to_numeric(data['dayofyear'])
+   data['moving_time'] = pd.to_timedelta(data['moving_time'], unit='s')
+   return data
     
 def correct_speed_distance(data):
     data['average_speed'] = (data['average_speed']*3.6)
@@ -30,16 +33,13 @@ def correct_speed_distance(data):
     
 
 # MAIN CODE
-'''
-access_token = get_token(client_id, client_secret, refresh_token)
-extract_strava_activities(access_token)
-'''
+
 # Opening json file and reading data 
 file_name = 'strava_data.json'
 data = read_data_from_json(file_name)
 data = pd.json_normalize(data)
-
 # Manipulating data 
+
 cols = ['resource_state', 'name', 'distance', 'moving_time', 'total_elevation_gain', 'type', 'sport_type', 'workout_type', 'id',
        'start_date', 'trainer', 'average_speed', 'max_speed', 'average_cadence', 'average_temp', 'average_watts',
        'max_watts', 'weighted_average_watts', 'device_watts', 'upload_id']
@@ -47,18 +47,19 @@ data = data[cols]
 
 data = correct_date_time(data)
 data = correct_speed_distance(data)
-
-
-
-rides_w_power = data.loc[data['device_watts'] == True]
-
-
-pp_df = rides_w_power[['distance', 'average_speed', 'weighted_average_watts', 'total_elevation_gain']]
-sns.pairplot(pp_df)
-
-print(rides_w_power.describe().round(0))
+'''
+sns.set(style="whitegrid", font_scale=1)
+sns.boxplot(x="year", y="distance", hue="year", data= data)
+'''
+sns.set_style('white')
+sns.barplot(x='month', y='distance', data=data, hue='year', ci=None, estimator=np.sum, palette = 'hot',
+           order =["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
+plt.legend(loc='upper center')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper right', borderaxespad=0)
+plt.show()
 
 ''''
+
 fig = plt.figure() #create overall container
 ax1 = fig.add_subplot(111) #add a 1 by 1 plot to the figure
 x = np.asarray(rides_w_power['distance'])  #convert data to numpy array
