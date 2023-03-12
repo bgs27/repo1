@@ -35,7 +35,7 @@ def correct_speed_distance(data):
 # MAIN CODE
 
 # Opening json file and reading data 
-file_name = 'strava_data.json'
+file_name = 'new_data.json'
 data = read_data_from_json(file_name)
 data = pd.json_normalize(data)
 # Manipulating data 
@@ -47,18 +47,24 @@ data = data[cols]
 
 data = correct_date_time(data)
 data = correct_speed_distance(data)
+
+startdate = pd.to_datetime("2018-01-01").date()
+enddate = pd.to_datetime("2021-05-01").date()
+data = data.drop(data[data.distance < 100].index)
+df = data
+df = df.drop(df[(df['date'] > startdate) & (df['date'] > enddate)].index)
+print(len(df))
+
 '''
 sns.set(style="whitegrid", font_scale=1)
 sns.boxplot(x="year", y="distance", hue="year", data= data)
-'''
+
 sns.set_style('white')
 sns.barplot(x='month', y='distance', data=data, hue='year', ci=None, estimator=np.sum, palette = 'hot',
            order =["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
 plt.legend(loc='upper center')
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper right', borderaxespad=0)
 plt.show()
-
-''''
 
 fig = plt.figure() #create overall container
 ax1 = fig.add_subplot(111) #add a 1 by 1 plot to the figure

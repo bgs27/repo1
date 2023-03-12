@@ -69,8 +69,8 @@ def read_data_from_json(file_name):
     return activities
 
 # MAIN CODE
-file_name = 'test.json'
-num_of_pages = 2
+file_name = 'new_data.json'
+num_of_pages = 5
 access_token = get_token(client_id, client_secret, refresh_token)
 extract_strava_activities(access_token, file_name, num_of_pages)
  
