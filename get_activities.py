@@ -1,4 +1,5 @@
 import json
+import csv
 import urllib3
 import requests
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -63,6 +64,10 @@ def save_data_to_json(activities, file_name):
     with open(file_name, "w") as f:
         json.dump(activities, f, indent=4)
 
+def save_data_to_csv(activities, file_name):
+    with open(file_name, "w") as f:
+        json.dump(activities, f, indent=4)
+
 def read_data_from_json(file_name):
     with open(file_name, 'r') as f:
         activities = json.load(f)
@@ -70,7 +75,7 @@ def read_data_from_json(file_name):
 
 # MAIN CODE
 file_name = 'new_data.json'
-num_of_pages = 5
+num_of_pages = 10
 access_token = get_token(client_id, client_secret, refresh_token)
 extract_strava_activities(access_token, file_name, num_of_pages)
  

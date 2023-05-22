@@ -48,12 +48,20 @@ data = data[cols]
 data = correct_date_time(data)
 data = correct_speed_distance(data)
 
-startdate = pd.to_datetime("2018-01-01").date()
-enddate = pd.to_datetime("2021-05-01").date()
-data = data.drop(data[data.distance < 100].index)
-df = data
-df = df.drop(df[(df['date'] > startdate) & (df['date'] > enddate)].index)
+data.to_csv('strava_data.csv', index = False)
+
+startdate = pd.to_datetime("2022-05-01").date()
+enddate = pd.to_datetime("2023-06-01").date()
+
+print('total:',len(data))
+df = data.drop(data[(data.date > enddate) | (data.date < startdate)].index)
 print(len(df))
+total = round(df.moving_time.dt.seconds.sum()/3600,2)
+print(total)
+
+
+
+
 
 '''
 sns.set(style="whitegrid", font_scale=1)
