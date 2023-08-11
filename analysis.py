@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 import numpy as np
+from datetime import datetime, timedelta 
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -31,6 +32,41 @@ def correct_speed_distance(data):
     data['distance'] = (data['distance']/1000)
     return data
     
+# def biggest_year(data):
+    start_date = datetime.date(2017, 1, 1)
+    results = []
+    for i in data.upload_id:
+        sum = datetime.timedelta(0)
+        end_date = start_date + datetime.timedelta(days=365)
+        x = i
+        if (data.date[i] >= start_date) & (data.date[i] <= end_date):
+         for x in x+365:
+            sum += data.moving_time[x]
+            results.append(sum)
+        elif data.date[i] > end_date:
+           break
+        start_date = start_date + datetime.timedelta(days=1)
+    return results
+
+def sum_figures_within_window(data):
+    total_sum = 0
+    start_date = data.date[0]
+    end_date = start_date + timedelta(days=365)
+    i = 0
+
+    while end_date <= range(data.upload_id):
+        while data.date[i] < end_date:
+            total_sum += data.moving_time[i]
+            i += 1
+
+        start_date += timedelta(days=1)
+        end_date += timedelta(days=1)
+        total_sum += data[i-365][1]
+
+    return total_sum
+
+
+
 
 # MAIN CODE
 
@@ -50,14 +86,21 @@ data = correct_speed_distance(data)
 
 data.to_csv('strava_data.csv', index = False)
 
-startdate = pd.to_datetime("2022-05-01").date()
-enddate = pd.to_datetime("2023-06-01").date()
+startdate = pd.to_datetime("2017-05-27").date()
+enddate = pd.to_datetime("2023-05-21").date()
+today  = pd.Timestamp('today')
+print(len(data.upload_id))
 
-print('total:',len(data))
-df = data.drop(data[(data.date > enddate) | (data.date < startdate)].index)
-print(len(df))
+#df = data.drop(data[(data.date > today) | (data.date < startdate)].index)
+
+df = data.drop(data[(data.date < startdate)].index)
+
+
+
 total = round(df.moving_time.dt.seconds.sum()/3600,2)
-print(total)
+print('Hours:',total)
+
+
 
 
 
